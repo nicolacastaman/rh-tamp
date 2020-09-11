@@ -1,0 +1,21 @@
+<launch>
+  <include file="$(find panda_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <node name="infinite"
+        pkg="tamp_example"
+        type="infinite"
+        respawn="false" output="screen">
+    <rosparam command="load"
+              file="$(find panda_moveit_config)/config/kinematics.yaml"/>
+  </node>
+
+<!--
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+  <param name="use_gui" value="true"/>
+</node>
+<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+-->
+
+</launch>

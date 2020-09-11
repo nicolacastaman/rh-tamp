@@ -1,0 +1,16 @@
+<launch>
+<arg name="horizon" default="2" />
+
+<arg name="problem" default="object_poses" />
+
+<!--
+  <include file="$(find panda_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+-->
+
+<node name="hanoi" pkg="moveit_tmp" type="hanoi" respawn="false" output="screen">
+<param name="horizon" type="int" value="$(arg horizon)" />
+</node>
+
+</launch>
