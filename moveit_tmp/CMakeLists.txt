@@ -59,20 +59,17 @@ add_library(${PROJECT_NAME}
     src/task_planner.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(finite src/finite_window.cpp)
+add_executable(finite apps/finite_window.cpp)
 target_link_libraries(finite ${catkin_LIBRARIES} ${PROJECT_NAME})
 
-add_executable(new_prob src/non_mono.cpp)
+add_executable(new_prob apps/non_mono.cpp)
 target_link_libraries(new_prob ${catkin_LIBRARIES} ${PROJECT_NAME})
 
-add_executable(baseline src/finite_window_baseline.cpp)
+add_executable(baseline apps/finite_window_baseline.cpp)
 target_link_libraries(baseline ${catkin_LIBRARIES} ${PROJECT_NAME})
 
-add_executable(non_mono_baseline src/non_mono_baseline.cpp)
+add_executable(non_mono_baseline apps/non_mono_baseline.cpp)
 target_link_libraries(non_mono_baseline ${catkin_LIBRARIES} ${PROJECT_NAME})
-
-add_executable(cluter_generator src/cluter_generator.cpp)
-target_link_libraries(cluter_generator ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 install(
   DIRECTORY config launch meshes urdf
