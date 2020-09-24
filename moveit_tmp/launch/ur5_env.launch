@@ -29,7 +29,7 @@
   </include>
 
   <!-- Run Rviz -->
-  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false" args="-d $(find moveit_tmp)/config/panda.rviz">
+  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false" args="-d $(find moveit_tmp)/config/scene.rviz">
     <rosparam command="load" file="$(find ur5_robotiq_moveit_config)/config/kinematics.yaml"/>
   </node>
 </launch>
