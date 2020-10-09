@@ -59,9 +59,12 @@ typedef std::pair<moveit_tmp::Action, std::vector<double>> ActionSolution;
 
 static const std::string LOGNAME = "moveit_tmp_demo";
 
-std::string problem_path = "/home/nicola/Desktop/PDDL/problem_.pddl";
+std::string planner_command_;
+std::string domain_path_;
+std::string problem_path_;
+std::string data_path_;
 
-int horizon_ = 4;
+int horizon_;
 
 // Arm
 const robot_model::JointModelGroup* arm_jmg_;
@@ -118,6 +121,13 @@ void loadParameters()
   // Horizon size
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "horizon", horizon_);
 
+  // File Path
+  rosparam_shortcuts::get(LOGNAME, pnh, "domain_path", domain_path_);
+  rosparam_shortcuts::get(LOGNAME, pnh, "problem_path", problem_path_);
+  rosparam_shortcuts::get(LOGNAME, pnh, "data_path", data_path_);
+  rosparam_shortcuts::get(LOGNAME, pnh, "planner_command", planner_command_);
+
+
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
 
@@ -146,8 +156,10 @@ void createTaskProblem(
 void createTaskProblem()
 {
 
+  std::cout << problem_path_ << std::endl;
+
   std::ofstream problem_file;
-  problem_file.open((problem_path).c_str());
+  problem_file.open((problem_path_).c_str());
 
   problem_file << "(define (problem non_mono)(:domain manipulation)";
 
@@ -158,12 +170,13 @@ void createTaskProblem()
          "(on object_2 surface_8) (on object_3 surface_0) (on object_4 "
          "surface_1) (on object_5 surface_2))))";
 
-/*
-  problem_file
-      << "(:goal (and (on object_0 surface_8) (on object_1 surface_9) "
-         "(on object_2 surface_10) (on object_3 surface_11) (on object_4 "
-         "surface_0) (on object_5 surface_1) (on object_6 surface_2) (on object_7 surface_3))))";
-*/
+  /*
+    problem_file
+        << "(:goal (and (on object_0 surface_8) (on object_1 surface_9) "
+           "(on object_2 surface_10) (on object_3 surface_11) (on object_4 "
+           "surface_0) (on object_5 surface_1) (on object_6 surface_2) (on
+    object_7 surface_3))))";
+  */
   problem_file.close();
 
   std::cout << kb.getPDDL();
@@ -434,14 +447,15 @@ int main(int argc, char** argv)
 
   // Inizializzo libreria
   moveit_tmp::TaskPlanner task_planner;
-  task_planner.setDomainPath(
-      "/home/nicola/Desktop/PDDL/pddl_domain_new_2.pddl");
+  task_planner.setDomainPath(domain_path_);
+  task_planner.setProblemPath(problem_path_);
+  task_planner.setPath(data_path_);
+  task_planner.setPlannerCommand(planner_command_);
 
   moveit_tmp::ModifyPlanningScene mps;
   moveit_tmp::PlacePoseGenerator ppg;
-  //ppg.setFixedLink("panda_link0");
-  ppg.setFixedLink("base_link");
-
+  ppg.setFixedLink("panda_link0");
+  //ppg.setFixedLink("base_link");
 
   planner_ = std::make_shared<moveit_tmp::Planner>(robot_model_);
 
@@ -460,11 +474,12 @@ int main(int argc, char** argv)
   moveit_tmp::CurrentState cs(robot_model_);
   cs.compute(ps);
 
-/*
-  mps.allowCollisions("table", "panda_link0", true);
-  mps.allowCollisions("table", "panda_link1", true);
-  mps.apply(ps, ps);
-*/
+  /*
+    mps.allowCollisions("table", "panda_link0", true);
+    mps.allowCollisions("table", "panda_link1", true);
+    mps.apply(ps, ps);
+  */
+
   moveit_msgs::PlanningScene psm;
   ps->getPlanningSceneMsg(psm);
   psi_->applyPlanningScene(psm);

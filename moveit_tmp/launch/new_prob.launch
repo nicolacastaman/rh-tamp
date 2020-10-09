@@ -1,7 +1,13 @@
 <launch>
 
-<arg name="problem" default="problem_0" />
+<arg name="problem" default="6_cylinders" />
 <arg name="horizon" default="2" />
+
+<arg name="domain_path" value="$(find moveit_tmp)/pddl/domain_new_2.pddl" />
+<arg name="problem_path" value="$(find moveit_tmp)/pddl/problem.pddl" />
+<arg name="data_path" value="$(find moveit_tmp)/pddl/" />
+<arg name="planner_command" default="timeout 10 $(find moveit_tmp)/common/bin/FF -o DOMAIN -f PROBLEM" />
+
 
 <!--
   <include file="$(find panda_moveit_config)/launch/planning_context.launch">
@@ -10,9 +16,12 @@
 -->
 
 <node name="new_prob" pkg="moveit_tmp" type="new_prob" respawn="false" output="screen">
-<rosparam command="load" file="$(find moveit_tmp)/config/prob_2/$(arg problem).yaml" />
-<rosparam command="load" file="$(find moveit_tmp)/config/ur_config.yaml" />
+<rosparam command="load" file="$(find moveit_tmp)/config/non_monotonic/$(arg problem).yaml" />
+<rosparam command="load" file="$(find moveit_tmp)/config/panda_config.yaml" />
 <param name="horizon" type="int" value="$(arg horizon)" />
+<param name="domain_path" value="$(arg domain_path)" />
+<param name="problem_path" value="$(arg problem_path)" />
+<param name="planner_command" value="$(arg planner_command)" />
 </node>
 
 </launch>
