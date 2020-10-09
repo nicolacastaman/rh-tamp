@@ -21,25 +21,24 @@ bool TaskPlanner::plan(std::vector<Action>& result)
   result.clear();
 
   // prepare the planner command line
-  std::string str = planner_command;
+  std::string str = planner_command_;
   std::size_t dit = str.find("DOMAIN");
   if (dit != std::string::npos)
-    str.replace(dit, 6, domain_path);
+    str.replace(dit, 6, domain_path_);
   std::size_t pit = str.find("PROBLEM");
   if (pit != std::string::npos)
-    str.replace(pit, 7, problem_path);
-  std::string commandString = str + " > " + data_path + "plan.pddl";
+    str.replace(pit, 7, problem_path_);
+  std::string commandString = str + " > " + data_path_ + "plan.pddl";
 
   // call the planer
-  ROS_INFO("(%s) (%s) Running: %s", ros::this_node::getName().c_str(),
-           problem_name.c_str(), commandString.c_str());
+  ROS_INFO("(%s) Running: %s", ros::this_node::getName().c_str(),
+           commandString.c_str());
   std::string plan = runCommand(commandString.c_str());
-  ROS_INFO("(%s) (%s) Planning complete", ros::this_node::getName().c_str(),
-           problem_name.c_str());
+  ROS_INFO("(%s) Planning complete", ros::this_node::getName().c_str());
 
   // check the planner solved the problem
   std::ifstream planfile;
-  planfile.open((data_path + "plan.pddl").c_str());
+  planfile.open((data_path_ + "plan.pddl").c_str());
   std::string line;
 
   bool solved = false;
@@ -98,11 +97,9 @@ bool TaskPlanner::plan(std::vector<Action>& result)
   planfile.close();
 
   if (!solved)
-    ROS_INFO("(%s) (%s) Plan was unsolvable.",
-             ros::this_node::getName().c_str(), problem_name.c_str());
+    ROS_INFO("(%s) Plan was unsolvable.", ros::this_node::getName().c_str());
   else
-    ROS_INFO("(%s) (%s) Plan was solved.", ros::this_node::getName().c_str(),
-             problem_name.c_str());
+    ROS_INFO("(%s) Plan was solved.", ros::this_node::getName().c_str());
 
   return solved;
 }
