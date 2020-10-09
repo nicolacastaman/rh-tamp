@@ -43,6 +43,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/pddl/")
+
 add_library(${PROJECT_NAME}
     src/action_cache.cpp
     src/action_planner.cpp
