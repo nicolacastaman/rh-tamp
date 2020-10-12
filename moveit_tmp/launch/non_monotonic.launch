@@ -3,10 +3,10 @@
 <arg name="problem" default="6_cylinders" />
 <arg name="horizon" default="2" />
 
-<arg name="domain_path" value="$(find moveit_tmp)/pddl/domain_new_2.pddl" />
+<arg name="domain_path" value="$(find moveit_tmp)/pddl/domain_manipulation.pddl" />
 <arg name="problem_path" value="$(find moveit_tmp)/pddl/problem.pddl" />
 <arg name="data_path" value="$(find moveit_tmp)/pddl/" />
-<arg name="planner_command" default="timeout 10 $(find moveit_tmp)/common/bin/FF -o DOMAIN -f PROBLEM" />
+<arg name="planner_command" default="timeout 10 $(find moveit_tmp)/common/bin/Metric-FF -o DOMAIN -f PROBLEM" />
 
 
 <!--
