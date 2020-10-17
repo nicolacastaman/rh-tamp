@@ -43,6 +43,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/pddl/")
+
 add_library(${PROJECT_NAME}
     src/action_cache.cpp
     src/action_planner.cpp
@@ -74,4 +76,9 @@ target_link_libraries(non_mono_baseline ${catkin_LIBRARIES} ${PROJECT_NAME})
 install(
   DIRECTORY config launch meshes urdf
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(DIRECTORY common/bin
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/common/bin/
+  FILE_PERMISSIONS OWNER_EXECUTE
 )

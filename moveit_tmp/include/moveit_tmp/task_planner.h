@@ -33,23 +33,26 @@ class TaskPlanner
 public:
   TaskPlanner();
 
-  void setDomainPath(const std::string& path) { domain_path = path; }
+  void setDomainPath(const std::string& path) { domain_path_ = path; }
 
-  void setProblemPath(const std::string& path) { problem_path = path; }
+  void setProblemPath(const std::string& path) { problem_path_ = path; }
 
-  void setPath(const std::string& path) { data_path = path; }
+  void setPath(const std::string& path) { data_path_ = path; }
+
+  void setPlannerCommand(const std::string& command)
+  {
+    planner_command_ = command;
+  }
 
   bool plan(std::vector<Action>& result);
 
 private:
   std::string runCommand(std::string cmd);
 
-  const std::string planner_command =
-      "timeout 60 /home/nicola/workspace/FF-v2.3/ff -o DOMAIN -f PROBLEM";
-  std::string domain_path = "/home/nicola/Desktop/PDDL/pddl_domain.pddl";
-  std::string problem_path = "/home/nicola/Desktop/PDDL/problem_.pddl";
-  const std::string problem_name = "Problem";
-  std::string data_path = "/home/nicola/Desktop/PDDL/";
+  std::string planner_command_;
+  std::string domain_path_;
+  std::string problem_path_;
+  std::string data_path_;
 };
 } // namespace moveit_tmp
 
