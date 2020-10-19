@@ -8,7 +8,6 @@
 )
 (:predicates (handempty)
              (holding ?i - item)
-             (obstruct ?i - item ?o - object)
              (using ?i - item)
              (on ?i - item ?s - surface)
              (in ?i - item ?r - robot)
@@ -17,7 +16,7 @@
 (:functions (distance ?x - place ?y -place)
            (speed ?r - robot)
            (load ?r - robot)
-           (maxLoad ?r - robot)
+           (maxLoad)
            (weight ?i - item)
            (loadTime ?i - item)
            (unloadTime ?i - item)
@@ -29,6 +28,7 @@
   :duration (= ?duration (/ (distance ?x ?y) (speed ?r)))
   :condition
   (and
+    (at start (handempty))
     (at start (at ?r ?x))
    )
   :effect
@@ -45,9 +45,8 @@
     (over all (using ?m))
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at start (not(exists(?i - item)(obstruct ?i ?r))))
     (at start (at ?r ?p))
-    (at start (>=(maxLoad)(+(load ?r)(weight ?m))))
+    (at end (>= (maxLoad) (+ (load ?r) (weight ?m))))
    )
   :effect
   (and
@@ -65,15 +64,13 @@
     (over all (using ?m))
     (at start (handempty))
     (at start (in ?m ?r))
-    (at start (not (exists (?i - item) (obstruct ?i ?m))))
     (at start (at ?r ?p))
    )
   :effect
   (and
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at end (not(in ?m ?r)))
-    (forall (?i - item)(at end (not (obstruct ?m ?i))))
+    (at start (not(in ?m ?r)))
     (at end (decrease(load ?r)(weight ?m)))
   )
 )
@@ -85,7 +82,6 @@
     (over all (using ?m))
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at start (not(exists(?i - item)(obstruct ?i ?c))))
     (at start (at ?r ?d))
    )
   :effect
@@ -103,15 +99,13 @@
     (over all (using ?m))
     (at start (handempty))
     (at start (on ?m ?c))
-    (at start (not(exists(?i - item)(obstruct ?i ?m))))
     (at start (at ?r ?d))
    )
   :effect
   (and
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at end (not(on ?m ?c)))
-    (forall(?i - item) (at end (not(obstruct ?m ?i))))
+    (at start (not(on ?m ?c)))
   )
 )
 (:durative-action drop_to_target
@@ -122,7 +116,6 @@
     (over all (using ?m))
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at start (not(exists(?i - item)(obstruct ?i ?t))))
     (at start (at ?r ?d))
    )
   :effect
@@ -140,15 +133,13 @@
     (over all (using ?m))
     (at start (handempty))
     (at start (on ?m ?t))
-    (at start (not(exists(?i - item)(obstruct ?i ?m))))
     (at start (at ?r ?d))
    )
   :effect
   (and
     (at start (holding ?m))
     (at start (not(handempty)))
-    (at end (not(on ?m ?t)))
-    (forall(?i - item)(at end (not(obstruct ?m ?i))))
+    (at start (not(on ?m ?t)))
   )
 )
 )
