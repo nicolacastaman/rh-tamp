@@ -1,6 +1,7 @@
 (define (problem three_objs_test)
 (:domain sort_clutter)
-(:objects red_0 red_1 blue_0 - movable
+(:objects movable - item
+          red_0 red_1 blue_0 - movable
           clutter_table - clutter
           target_red_0 target_red_1 target_blue_0 - target
           rur53 - robot
@@ -26,9 +27,9 @@
        (=(distance dock_clutter_table dock_sorted_color) 5)
        (=(speed rur53) 2.5)
 )
-(:goal (on red_0 target_red_0)
-       (on red_1 target_red_1)
-       (on blue_0 target_blue_0)
+(:goal (and (on red_0 target_red_0)
+       	    (on red_1 target_red_1)
+            (on blue_0 target_blue_0))
 )
 (:metric minimize(total-time))
 )

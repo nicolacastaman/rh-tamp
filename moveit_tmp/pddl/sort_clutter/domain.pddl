@@ -1,5 +1,5 @@
 (define (domain sort_clutter)
-(:requirements :typing :durative-actions :fluents :adl)
+(:requirements :adl :typing :durative-actions :fluents)
 (:types item surface place locatable - object
         movable others - item
         clutter target - surface
@@ -14,7 +14,7 @@
              (in ?i - item ?r - robot)
              (at ?r - robot ?p - place)
 )
-(:functins (distance ?x - place ?y -place)
+(:functions (distance ?x - place ?y -place)
            (speed ?r - robot)
            (load ?r - robot)
            (maxLoad ?r - robot)
@@ -65,7 +65,7 @@
     (over all (using ?m))
     (at start (handempty))
     (at start (in ?m ?r))
-    (at start (not(exists(?i - item)(obstruct ?i ?m))))
+    (at start (not (exists (?i - item) (obstruct ?i ?m))))
     (at start (at ?r ?p))
    )
   :effect
@@ -73,7 +73,7 @@
     (at start (holding ?m))
     (at start (not(handempty)))
     (at end (not(in ?m ?r)))
-    (at end (forall(?i - item)(not(obstruct ?m ?i))))
+    (forall (?i - item)(at end (not (obstruct ?m ?i))))
     (at end (decrease(load ?r)(weight ?m)))
   )
 )
@@ -111,7 +111,7 @@
     (at start (holding ?m))
     (at start (not(handempty)))
     (at end (not(on ?m ?c)))
-    (at end (forall(?i - item)(not(obstruct ?m ?i))))
+    (forall(?i - item) (at end (not(obstruct ?m ?i))))
   )
 )
 (:durative-action drop_to_target
@@ -148,7 +148,7 @@
     (at start (holding ?m))
     (at start (not(handempty)))
     (at end (not(on ?m ?t)))
-    (at end (forall(?i - item)(not(obstruct ?m ?i))))
+    (forall(?i - item)(at end (not(obstruct ?m ?i))))
   )
 )
 )
