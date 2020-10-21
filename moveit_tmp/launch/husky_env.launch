@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <include file="$(find husky_description)/launch/description.launch">
+  </include>
+
+  <!-- We do not have a robot connected, so publish fake joint states -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="false"/>
+    <param name="rate" value="50"/>
+  </node>
+  <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
+
+  <!-- Given the published joint states, publish tf for the robot links -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <!-- Run Rviz -->
+  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false">
+  </node>
+
+</launch>
