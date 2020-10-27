@@ -9,6 +9,8 @@ KnowledgeBase::KnowledgeBase()
   obstruct_ = std::make_shared<Obstruct>(this);
   is_stackable_ = std::make_shared<IsStackable>(this);
   leave_clean_ = std::make_shared<LeaveClean>(this);
+  in_ = std::make_shared<In>(this);
+  near_ = std::make_shared<Near>(this);
 }
 
 KnowledgeBase::KnowledgeBase(const KnowledgeBase& kb)
@@ -16,7 +18,9 @@ KnowledgeBase::KnowledgeBase(const KnowledgeBase& kb)
       in_hand_(std::make_shared<InHand>(*kb.in_hand_)),
       obstruct_(std::make_shared<Obstruct>(*kb.obstruct_)),
       is_stackable_(std::make_shared<IsStackable>(*kb.is_stackable_)),
-      leave_clean_(std::make_shared<LeaveClean>(*kb.leave_clean_))
+      leave_clean_(std::make_shared<LeaveClean>(*kb.leave_clean_)),
+      in_(std::make_shared<In>(*kb.in_)),
+      near_(std::make_shared<Near>(*kb.near_))
 {
 }
 
@@ -60,6 +64,10 @@ std::string KnowledgeBase::getPDDL()
   pddl += is_stackable_->getPDDL();
 
   pddl += in_hand_->getPDDL();
+
+  pddl += in_->getPDDL();
+
+  pddl += near_->getPDDL();
 
   pddl += ")";
   return pddl;
@@ -139,6 +147,10 @@ std::shared_ptr<KnowledgeBase::LeaveClean> KnowledgeBase::getLeaveClean()
 {
   return leave_clean_;
 }
+
+std::shared_ptr<KnowledgeBase::In> KnowledgeBase::getIn() { return in_; }
+
+std::shared_ptr<KnowledgeBase::Near> KnowledgeBase::getNear() { return near_; }
 
 // On Fact //
 
@@ -340,5 +352,53 @@ std::string KnowledgeBase::LeaveClean::getPDDL()
 }
 
 void KnowledgeBase::LeaveClean::reset() { leave_clean_.clear(); }
+
+// In Fact //
+
+void KnowledgeBase::In::add(std::string object_id) { in_.push_back(object_id); }
+
+std::string KnowledgeBase::In::getPDDL()
+{
+  std::string pddl;
+
+  for (auto const& in : in_)
+  {
+    pddl += "(in " + in + ")";
+  }
+
+  return pddl;
+}
+
+void KnowledgeBase::In::removeObject(std::string object_id)
+{
+  remove(in_.begin(), in_.end(), object_id);
+}
+
+void KnowledgeBase::In::reset() { in_.clear(); }
+
+
+// Near Fact //
+
+void KnowledgeBase::Near::add(std::string object_id) { near_ = object_id; }
+
+void KnowledgeBase::Near::empty() { near_ = ""; }
+
+void KnowledgeBase::Near::removeObject(std::string object_id)
+{
+  if (near_ == object_id)
+    empty();
+}
+
+std::string KnowledgeBase::Near::getPDDL()
+{
+  std::string pddl;
+
+  if (near_ != "")
+    pddl += "(near " + near_ + ")";
+
+  return pddl;
+}
+
+void KnowledgeBase::Near::reset() { near_.clear(); }
 
 } // namespace moveit_tmp

@@ -53,6 +53,8 @@ private:
   class Obstruct;
   class IsStackable;
   class LeaveClean;
+  class In;
+  class Near;
 
 public:
   KnowledgeBase();
@@ -78,6 +80,8 @@ public:
   std::shared_ptr<Obstruct> getObstruct();
   std::shared_ptr<IsStackable> getIsStackable();
   std::shared_ptr<LeaveClean> getLeaveClean();
+  std::shared_ptr<In> getIn();
+  std::shared_ptr<Near> getNear();
 
   std::string getPDDL();
 
@@ -186,6 +190,42 @@ private:
     std::vector<std::pair<std::string, std::string>> leave_clean_;
   };
 
+  class In : public Fact
+  {
+  public:
+    In(KnowledgeBase* kb) : Fact(kb) {}
+
+    void add(const std::string object);
+
+    std::string getPDDL() override;
+
+    void removeObject(const std::string object_id) override;
+
+    void reset() override;
+
+  private:
+    std::vector<std::string> in_;
+  };
+
+  class Near : public Fact
+  {
+  public:
+    Near(KnowledgeBase* kb) : Fact(kb) {}
+
+    void add(const std::string object);
+
+    void empty();
+
+    std::string getPDDL() override;
+
+    void removeObject(const std::string object_id) override;
+
+    void reset() override;
+
+  private:
+    std::string near_;
+  };
+
   std::set<Object, ObjectComparator> objects_;
 
   std::shared_ptr<On> on_;
@@ -197,6 +237,10 @@ private:
   std::shared_ptr<IsStackable> is_stackable_;
 
   std::shared_ptr<LeaveClean> leave_clean_;
+
+  std::shared_ptr<In> in_;
+
+  std::shared_ptr<Near> near_;
 };
 
 } // namespace moveit_tmp
