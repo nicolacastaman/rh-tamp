@@ -9,7 +9,7 @@ KnowledgeBase::KnowledgeBase()
   obstruct_ = std::make_shared<Obstruct>(this);
   is_stackable_ = std::make_shared<IsStackable>(this);
   leave_clean_ = std::make_shared<LeaveClean>(this);
-  in_ = std::make_shared<In>(this);
+  loaded_ = std::make_shared<Loaded>(this);
   near_ = std::make_shared<Near>(this);
 }
 
@@ -19,8 +19,8 @@ KnowledgeBase::KnowledgeBase(const KnowledgeBase& kb)
       obstruct_(std::make_shared<Obstruct>(*kb.obstruct_)),
       is_stackable_(std::make_shared<IsStackable>(*kb.is_stackable_)),
       leave_clean_(std::make_shared<LeaveClean>(*kb.leave_clean_)),
-      in_(std::make_shared<In>(*kb.in_)),
-      near_(std::make_shared<Near>(*kb.near_))
+      loaded_(std::make_shared<Loaded>(*kb.loaded_)),
+      near_(std::make_shared<Near>(*kb.near_)),
 {
 }
 
@@ -65,7 +65,7 @@ std::string KnowledgeBase::getPDDL()
 
   pddl += in_hand_->getPDDL();
 
-  pddl += in_->getPDDL();
+  pddl += loaded_->getPDDL();
 
   pddl += near_->getPDDL();
 
@@ -148,7 +148,7 @@ std::shared_ptr<KnowledgeBase::LeaveClean> KnowledgeBase::getLeaveClean()
   return leave_clean_;
 }
 
-std::shared_ptr<KnowledgeBase::In> KnowledgeBase::getIn() { return in_; }
+std::shared_ptr<KnowledgeBase::Loaded> KnowledgeBase::getLoaded() { return loaded_; }
 
 std::shared_ptr<KnowledgeBase::Near> KnowledgeBase::getNear() { return near_; }
 
@@ -345,7 +345,7 @@ std::string KnowledgeBase::LeaveClean::getPDDL()
   for (auto const& leave_clean : leave_clean_)
   {
     pddl +=
-        "(leave-clean " + leave_clean.first + " " + leave_clean.second + ")";
+        "(leave-free " + leave_clean.first + " " + leave_clean.second + ")";
   }
 
   return pddl;
@@ -353,29 +353,30 @@ std::string KnowledgeBase::LeaveClean::getPDDL()
 
 void KnowledgeBase::LeaveClean::reset() { leave_clean_.clear(); }
 
-// In Fact //
+// Loaded Fact //
 
-void KnowledgeBase::In::add(std::string object_id) { in_.push_back(object_id); }
+void KnowledgeBase::Loaded::add(std::string object_id)
+{
+  loaded_.push_back(object_id);
+}
 
-std::string KnowledgeBase::In::getPDDL()
+std::string KnowledgeBase::Loaded::getPDDL()
 {
   std::string pddl;
 
-  for (auto const& in : in_)
+  for (auto const& loaded : loaded_)
   {
-    pddl += "(in " + in + ")";
+    pddl += "(loaded " + loaded + ")";
   }
-
   return pddl;
 }
 
-void KnowledgeBase::In::removeObject(std::string object_id)
+void KnowledgeBase::Loaded::removeObject(std::string object_id)
 {
-  remove(in_.begin(), in_.end(), object_id);
+  remove(loaded_.begin(), loaded_.end(), object_id);
 }
 
-void KnowledgeBase::In::reset() { in_.clear(); }
-
+void KnowledgeBase::Loaded::reset() { loaded_.clear(); }
 
 // Near Fact //
 

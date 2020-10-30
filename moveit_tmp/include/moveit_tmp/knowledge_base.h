@@ -53,7 +53,7 @@ private:
   class Obstruct;
   class IsStackable;
   class LeaveClean;
-  class In;
+  class Loaded;
   class Near;
 
 public:
@@ -80,7 +80,7 @@ public:
   std::shared_ptr<Obstruct> getObstruct();
   std::shared_ptr<IsStackable> getIsStackable();
   std::shared_ptr<LeaveClean> getLeaveClean();
-  std::shared_ptr<In> getIn();
+  std::shared_ptr<Loaded> getLoaded();
   std::shared_ptr<Near> getNear();
 
   std::string getPDDL();
@@ -190,10 +190,10 @@ private:
     std::vector<std::pair<std::string, std::string>> leave_clean_;
   };
 
-  class In : public Fact
+  class Loaded : public Fact
   {
   public:
-    In(KnowledgeBase* kb) : Fact(kb) {}
+    Loaded(KnowledgeBase* kb) : Fact(kb) {}
 
     void add(const std::string object);
 
@@ -204,7 +204,7 @@ private:
     void reset() override;
 
   private:
-    std::vector<std::string> in_;
+    std::vector<std::string> loaded_;
   };
 
   class Near : public Fact
@@ -238,7 +238,7 @@ private:
 
   std::shared_ptr<LeaveClean> leave_clean_;
 
-  std::shared_ptr<In> in_;
+  std::shared_ptr<Loaded> loaded_;
 
   std::shared_ptr<Near> near_;
 };
