@@ -1,4 +1,4 @@
-(define (domain manipulation)
+(define (domain navigation)
 (:requirements :adl :fluents)
 (:types item surface place - object
         movable fixed - item
@@ -88,6 +88,7 @@
     (forall (?i - item) (not (obstruct ?m ?i)))
     (not (on ?m ?s))
     (forall (?p - place) (not (located-in ?m ?p)))
+    (increase(time)(manipulation-time))
   )
 )
 
@@ -109,6 +110,7 @@
     (forall (?s - item) (not (leave-free ?s ?m)))
     (not (on ?m ?i))
     (forall (?p - place) (not (located-in ?m ?p)))
+    (increase(time)(manipulation-time))
   )
 )
 
@@ -127,6 +129,7 @@
     (not (holding ?m))
     (on ?m ?s)
     (forall (?p - place) (when (located-in ?s ?p) (located-in ?m ?p)))
+    (increase(time)(manipulation-time))
   )
 )
 
@@ -148,6 +151,7 @@
     (not (holding ?m))
     (on ?m ?i)
     (forall (?p - place) (when (located-in ?i ?p) (located-in ?m ?p)))
+    (increase(time)(manipulation-time))
   )
 )
 )
