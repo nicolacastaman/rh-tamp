@@ -6,8 +6,7 @@
 
   <maintainer email="nicola.castaman@it-robotics.it">Nicola Castaman</maintainer>
   <license>Apache 2.0</license>
-  <license>BSD 2-Clause</license>
-  <author >Levi Armstrong</author>
+  <author >Nicola Castaman</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
@@ -20,6 +19,7 @@
   <depend>moveit_ros_planning</depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>moveit_visual_tools</depend>
+  <exec_depend>moveit_tmp_capabilities</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
