@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-  <include file="$(find ur5_robotiq_moveit_config)/launch/planning_context.launch">
+  <include file="$(find husky_ur5_robotiq_moveit_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
   </include>
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 world base_link" />
+  <!--<node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 world base_link" />-->
 
   <!-- We do not have a robot connected, so publish fake joint states -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
@@ -19,7 +19,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
   
   <!-- Run the main MoveIt executable (the move_group node) -->
-  <include file="$(find ur5_robotiq_moveit_config)/launch/move_group.launch">
+  <include file="$(find husky_ur5_robotiq_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
     <arg name="fake_execution" value="true"/>
     <arg name="info" value="true"/>
@@ -28,8 +28,14 @@
     <arg name="capabilities" value="move_group/ExecuteTMPSolutionCapability" />
   </include>
 
+  <node name="node" pkg="fake_navigation" type="node" />
+
+  <include file="$(find moveit_tmp)/launch/husky_move_base.launch">
+    <arg name="no_static_map" value="true"/>
+  </include>
+
   <!-- Run Rviz -->
   <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false" args="-d $(find moveit_tmp)/config/scene.rviz">
-    <rosparam command="load" file="$(find ur5_robotiq_moveit_config)/config/kinematics.yaml"/>
+    <rosparam command="load" file="$(find husky_ur5_robotiq_moveit_config)/config/kinematics.yaml"/>
   </node>
 </launch>
