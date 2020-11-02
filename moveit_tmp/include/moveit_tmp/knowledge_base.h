@@ -17,7 +17,9 @@ enum ObjectType
 {
   MOVABLE,
   FIXED,
-  SURFACE
+  SURFACE,
+  PLACE,
+  ROBOT
 };
 
 struct Surface
@@ -31,6 +33,7 @@ struct Object
 {
   std::string id;
   ObjectType type;
+  int weight;
   bool has_surface;
   Surface surface;
 };
@@ -55,6 +58,7 @@ private:
   class LeaveClean;
   class Loaded;
   class Near;
+  class LocatedIn;
 
 public:
   KnowledgeBase();
@@ -82,7 +86,10 @@ public:
   std::shared_ptr<LeaveClean> getLeaveClean();
   std::shared_ptr<Loaded> getLoaded();
   std::shared_ptr<Near> getNear();
+  std::shared_ptr<LocatedIn> getLocatedIn();
 
+  std::string getObjectsPDDL(bool header);
+  std::string getInitPDDL(bool header);
   std::string getPDDL();
 
 private:
@@ -226,6 +233,25 @@ private:
     std::string near_;
   };
 
+  class LocatedIn : public Fact
+  {
+  public:
+    LocatedIn(KnowledgeBase* kb) : Fact(kb) {}
+
+    void add(const std::string object_1, const std::string object_2);
+
+    std::string getLocationById(const std::string object_id);
+
+    std::string getPDDL() override;
+
+    void removeObject(const std::string object_id) override;
+
+    void reset() override;
+
+  private:
+    std::vector<std::pair<std::string, std::string>> located_in_;
+  };
+
   std::set<Object, ObjectComparator> objects_;
 
   std::shared_ptr<On> on_;
@@ -241,6 +267,8 @@ private:
   std::shared_ptr<Loaded> loaded_;
 
   std::shared_ptr<Near> near_;
+
+  std::shared_ptr<LocatedIn> located_in_;
 };
 
 } // namespace moveit_tmp

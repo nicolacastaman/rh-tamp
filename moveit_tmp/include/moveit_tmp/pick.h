@@ -24,7 +24,7 @@ public:
 
   bool plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
             const std::string object_name,
-            const std::vector<double>& joint_values,
+            const std::vector<double>& joint_values, const bool attach,
             ActionPipeline& pipeline) override;
 
 private:
@@ -32,7 +32,6 @@ private:
   ModifyPlanningScene mps_;
   PlannerPtr planner_;
   Move move_;
-
 };
 } // namespace moveit_tmp
 

@@ -41,7 +41,7 @@ public:
 
   virtual bool plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
                     const std::string object_name,
-                    const std::vector<double>& joint_values,
+                    const std::vector<double>& joint_values, const bool attach,
                     ActionPipeline& pipeline) = 0;
 
 protected:

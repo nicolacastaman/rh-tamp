@@ -347,7 +347,7 @@ int main(int argc, char** argv)
   convertDoublesToEigen(max, p_max);
 
   moveit_tmp::Surface sur = {"world", p_min, p_max};
-  moveit_tmp::Object obj = {"table", moveit_tmp::ObjectType::SURFACE, true,
+  moveit_tmp::Object obj = {"table", moveit_tmp::ObjectType::SURFACE, -1, true,
                             sur};
   kb.addObject(obj);
   // kb.addObject("table", moveit_tmp::ObjectType::SURFACE);
@@ -367,7 +367,7 @@ int main(int argc, char** argv)
 
     moveit_tmp::Surface sur = {surface_id, p_min, p_max};
     moveit_tmp::Object obj = {"surface_" + std::to_string(i),
-                              moveit_tmp::ObjectType::FIXED, true, sur};
+                              moveit_tmp::ObjectType::FIXED, -1, true, sur};
 
     rviz_visual_tools::colors col;
     if (i < 3)
@@ -415,7 +415,7 @@ int main(int argc, char** argv)
     spawnObject(createCylinder(object_name, object_pose[0], object_pose[1],
                                object_pose[2], 0.015, 0.20, frame_id),
                 col);
-    moveit_tmp::Object obj = {object_name, moveit_tmp::ObjectType::MOVABLE,
+    moveit_tmp::Object obj = {object_name, moveit_tmp::ObjectType::MOVABLE, 1,
                               false};
     kb.addObject(obj);
     kb.getOn()->add(object_name, frame_id);
@@ -433,7 +433,7 @@ int main(int argc, char** argv)
 
   moveit_tmp::ModifyPlanningScene mps;
   moveit_tmp::PlacePoseGenerator ppg;
-    ppg.setFixedLink("base_link");
+  ppg.setFixedLink("base_link");
 
   planner_ = std::make_shared<moveit_tmp::Planner>(robot_model_);
 
@@ -862,7 +862,7 @@ int main(int argc, char** argv)
               action_solutions[i].first.name == "unstack")
           {
             s = pick.plan(scene, action_solutions[i].first.parameters[0],
-                          joint_values, p);
+                          joint_values, false, p);
 
             // if (s)
             //{
@@ -873,7 +873,7 @@ int main(int argc, char** argv)
                    action_solutions[i].first.name == "stack")
           {
             s = place.plan(scene, action_solutions[i].first.parameters[0],
-                           joint_values, p);
+                           joint_values, false, p);
             // if (s)
             //{
             //  kb.getOn()->add(action_solutions[0].first.parameters[0],

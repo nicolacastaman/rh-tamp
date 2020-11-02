@@ -60,7 +60,7 @@ bool Place::reason(const planning_scene::PlanningSceneConstPtr& planning_scene,
 
 bool Place::plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
                  const std::string target_name,
-                 const std::vector<double>& joint_val, ActionPipeline& pipeline)
+                 const std::vector<double>& joint_val, const bool attach, ActionPipeline& pipeline)
 {
 
   // planning_scene::PlanningScenePtr sandbox_scene_1, sandbox_scene_2;
@@ -85,6 +85,13 @@ bool Place::plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
   mps_.detachObject(target_name, ik_frame_.header.frame_id);
   mps_.apply(step_1.first, step_2.first);
   pipeline.push_back(step_2);
+
+  if(attach){
+    Step step_3;
+    mps_.attachObject(target_name, "top_plate_link");
+    mps_.apply(step_2.first, step_3.first);
+    pipeline.push_back(step_3);
+  }
 
   return true;
 }

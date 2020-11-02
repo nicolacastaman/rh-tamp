@@ -722,12 +722,12 @@ int main(int argc, char** argv)
           if (action_solutions[i].first.name == "pickup")
           {
             s = pick.plan(scene, action_solutions[i].first.parameters[0],
-                          joint_values, p);
+                          joint_values, false, p);
           }
           else
           {
             s = place.plan(scene, action_solutions[i].first.parameters[0],
-                           joint_values, p);
+                           joint_values, false, p);
             // removed++;
           }
           count++;

@@ -62,9 +62,20 @@ bool Pick::reason(const planning_scene::PlanningSceneConstPtr& planning_scene,
 
 bool Pick::plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
                 const std::string target_name,
-                const std::vector<double>& joint_values,
+                const std::vector<double>& joint_values, const bool attach,
                 ActionPipeline& pipeline)
 {
+  Step step_0;
+  if (attach)
+  {
+    mps_.detachObject(target_name, "top_plate_link");
+    mps_.apply(planning_scene, step_0.first);
+    pipeline.push_back(step_0);
+  }
+  else
+  {
+    mps_.apply(planning_scene, step_0.first);
+  }
 
   // Config move object
   move_.setIKFrame(ik_frame_);
@@ -72,7 +83,7 @@ bool Pick::plan(const planning_scene::PlanningSceneConstPtr& planning_scene,
   Step step_1;
 
   move_.setGroup(group_);
-  if (!move_.compute(planning_scene, joint_values, step_1.first, step_1.second))
+  if (!move_.compute(step_0.first, joint_values, step_1.first, step_1.second))
   {
     ROS_WARN("Motion plan not found");
     return false;
