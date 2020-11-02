@@ -227,7 +227,7 @@ bool ComputeIK::compute(const planning_scene::PlanningSceneConstPtr& from,
   }
   else
   {
-    ROS_WARN("No link found (TODO Sistemare messaggio)");
+    ROS_WARN_STREAM("No link found: " << ik_pose_msg.header.frame_id);
   }
 
   target_pose = target_pose * ik_pose.inverse();
@@ -265,6 +265,7 @@ bool ComputeIK::compute(const planning_scene::PlanningSceneConstPtr& from,
 
     return true;
   }
+
   return false;
 }
 } // namespace moveit_tmp
