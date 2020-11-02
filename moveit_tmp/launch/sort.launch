@@ -1,0 +1,27 @@
+<launch>
+
+<arg name="problem" default="final" />
+<arg name="horizon" default="2" />
+
+<arg name="domain_path" value="$(find moveit_tmp)/pddl/domain_navigation.pddl" />
+<arg name="problem_path" value="$(find moveit_tmp)/pddl/problem.pddl" />
+<arg name="data_path" value="$(find moveit_tmp)/pddl/" />
+<arg name="planner_command" default="timeout 30 $(find moveit_tmp)/common/bin/Metric-FF -O -o DOMAIN -f PROBLEM" />
+
+
+<!--
+  <include file="$(find panda_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+-->
+
+<node name="sort_nav" pkg="moveit_tmp" type="sort_nav" respawn="false" output="screen">
+<rosparam command="load" file="$(find moveit_tmp)/config/sort_nav/$(arg problem).yaml" />
+<rosparam command="load" file="$(find moveit_tmp)/config/husky_config.yaml" />
+<param name="horizon" type="int" value="$(arg horizon)" />
+<param name="domain_path" value="$(arg domain_path)" />
+<param name="problem_path" value="$(arg problem_path)" />
+<param name="planner_command" value="$(arg planner_command)" />
+</node>
+
+</launch>

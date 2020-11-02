@@ -24,6 +24,7 @@ catkin_package(
     CATKIN_DEPENDS
             moveit_core
             moveit_tmp_msgs
+            moveit_tmp_capabilities
             moveit_visual_tools
             moveit_ros_planning_interface
 )
@@ -72,6 +73,9 @@ target_link_libraries(baseline ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 add_executable(non_mono_baseline apps/non_mono_baseline.cpp)
 target_link_libraries(non_mono_baseline ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+add_executable(sort_nav apps/sort_nav.cpp)
+target_link_libraries(sort_nav ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 install(
   DIRECTORY config launch meshes urdf
