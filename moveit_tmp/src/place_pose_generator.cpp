@@ -43,12 +43,13 @@ bool PlacePoseGenerator::compute(
     double y = distribution(rng_) *
                    (p_max.translation().y() - p_min.translation().y()) +
                p_min.translation().y();
+    double z = (p_max.translation().z() + p_min.translation().z()) / 2;
 
     attached_object.object.primitive_poses[0].position.x = x;
     attached_object.object.primitive_poses[0].position.y = y;
     attached_object.object.primitive_poses[0].position.z =
         attached_object.object.primitives[0].dimensions[0] / 2 +
-        0.001; // TODO attenzione funziona solo con i cilindri
+        z; // TODO attenzione funziona solo con i cilindri
     attached_object.object.primitive_poses[0].orientation.x = 0;
     attached_object.object.primitive_poses[0].orientation.y = 0;
     attached_object.object.primitive_poses[0].orientation.z = 0;
@@ -69,6 +70,8 @@ bool PlacePoseGenerator::compute(
 
     target_pose.header.frame_id = frame_id;
     target_pose.pose = attached_object.object.primitive_poses[0];
+
+    //std::cout << target_pose << std::endl;
 
     // if (!res.collision)
     //  return true;
@@ -95,7 +98,6 @@ bool PlacePoseGenerator::compute(
         }
       }
     }
-
 
     if (!collision)
       return true;
