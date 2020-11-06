@@ -5,6 +5,7 @@
 // ROS
 #include <ros/ros.h>
 
+#include <chrono>
 #include <iostream>
 
 #include <moveit_tmp/pick.h>
@@ -180,7 +181,7 @@ void createTaskProblem()
   problem_file << ")" << std::endl;
 
   problem_file
-      << "(:goal (and (on red_0 red_target_0) (on red_1 red_target_1) "
+      << "(:goal (and (on red_0 red_target_0)(on red_1 red_target_1) "
          "(on green_0 green_target_0) (on green_1 green_target_1)"
          "(on blue_0 blue_target_0) (on blue_1 blue_target_1)"
          "(on yellow_0 yellow_target_0) (on yellow_1 yellow_target_1)))";
@@ -253,6 +254,7 @@ moveit_msgs::CollisionObject createTable(std::string table_name, double x,
   pose.position.x = x;
   pose.position.y = y;
   pose.position.z = z;
+  pose.orientation.w = 1.0;
 
   moveit_msgs::CollisionObject object;
   object.id = table_name;
@@ -280,6 +282,7 @@ moveit_msgs::CollisionObject createCylinder(std::string object_name, double x,
   pose.position.x = x;
   pose.position.y = y;
   pose.position.z += 0.5 * object_dimensions[0] + z;
+  pose.orientation.w = 1.0;
 
   moveit_msgs::CollisionObject object;
   object.id = object_name;
@@ -438,7 +441,7 @@ int main(int argc, char** argv)
                                 false};
   kb.addObject(table_1);
   docking_station.insert(
-      std::make_pair("table_1", std::vector<double>{0.0, 1.1, 0.0, 0.0, 0.0,
+      std::make_pair("table_1", std::vector<double>{0.0, 0.9, 0.0, 0.0, 0.0,
                                                     0.7071068, 0.7071068}));
 
   spawnObject(
@@ -449,7 +452,7 @@ int main(int argc, char** argv)
                                 false};
   kb.addObject(table_2);
   docking_station.insert(
-      std::make_pair("table_2", std::vector<double>{0.0, -1.1, 0.0, 0.0, 0.0,
+      std::make_pair("table_2", std::vector<double>{0.0, -0.9, 0.0, 0.0, 0.0,
                                                     -0.7071068, 0.7071068}));
 
   spawnObject(
@@ -459,7 +462,7 @@ int main(int argc, char** argv)
   moveit_tmp::Object table_3 = {"table_3", moveit_tmp::ObjectType::PLACE,
                                 false};
   docking_station.insert(std::make_pair(
-      "table_3", std::vector<double>{1.62, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}));
+      "table_3", std::vector<double>{1.55, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}));
 
   kb.addObject(table_3);
 
@@ -480,7 +483,7 @@ int main(int argc, char** argv)
   kb.getLocatedIn()->add("surface_1", "table_3");
 
   // robot surface
-  min = {0.0, -0.15, 0.007, 0.0, 0.0, 0.0};
+  min = {-0.1, -0.15, 0.007, 0.0, 0.0, 0.0};
   max = {-0.3, 0.15, 0.007, 0.0, 0.0, 0.0};
   convertDoublesToEigen(min, p_min);
   convertDoublesToEigen(max, p_max);
@@ -549,7 +552,7 @@ int main(int argc, char** argv)
 
   std::vector<moveit_msgs::ObjectColor> object_colors = psm.object_colors;
 
-  clock_t begin = clock();
+  const auto begin = std::chrono::system_clock::now();
 
   moveit_tmp::ActionCache cache;
 
@@ -595,11 +598,19 @@ int main(int argc, char** argv)
 
       for (int i = 0; i < attached_bodies.size(); i++)
       {
-        std::string in_hand = attached_bodies[i]->getName();
 
-        // std::cout << "check in-hand: " << in_hand << std::endl;
+        std::cout << "ATTACH LINK "
+                  << attached_bodies[i]->getAttachedLink()->getName()
+                  << std::endl;
 
-        kb.getInHand()->add(in_hand);
+        if (attached_bodies[i]->getAttachedLink()->getName() == hand_frame_)
+        {
+          std::string in_hand = attached_bodies[i]->getName();
+
+          // std::cout << "check in-hand: " << in_hand << std::endl;
+
+          kb.getInHand()->add(in_hand);
+        }
       }
 
       createTaskProblem();
@@ -629,6 +640,8 @@ int main(int argc, char** argv)
 
     std::vector<ActionSolution> action_solutions;
     current_state.compute(current_scene);
+
+    ROS_INFO("Start Loop");
 
     for (int i = j; i < task_solution.size() && i < j + horizon_; i++)
     {
@@ -726,8 +739,16 @@ int main(int argc, char** argv)
                 continue;
               }
 
-              // kb.addObject(collisions[i], moveit_tmp::MOVABLE);
-              kb.getObstruct()->add(collisions[i], object_name);
+              moveit_tmp::Object coll_obj;
+              if (kb.getObjectById(collisions[i], coll_obj))
+              {
+                if (coll_obj.type == moveit_tmp::ObjectType::MOVABLE ||
+                    coll_obj.type == moveit_tmp::ObjectType::FIXED)
+                {
+                  // kb.addObject(collisions[i], moveit_tmp::MOVABLE);
+                  kb.getObstruct()->add(collisions[i], object_name);
+                }
+              }
 
               moveit_tmp::Object surface;
               if (sandbox_kb.getOn()->getUnderById(collisions[i], surface))
@@ -795,8 +816,6 @@ int main(int argc, char** argv)
           }
         }
 
-        std::cout << "che succede" << std::endl;
-
         // solution not founded in cache
         if (!found)
         {
@@ -807,8 +826,6 @@ int main(int argc, char** argv)
             ROS_ERROR_STREAM("Surface " << surface_name << " not found.");
             return 1; // TODO
           }
-
-          std::cout << "che succede" << std::endl;
 
           geometry_msgs::PoseStamped target;
           Eigen::Isometry3d pose;
@@ -822,8 +839,6 @@ int main(int argc, char** argv)
             ROS_WARN("Place surface not empty. Update contraints and replan.");
             break;
           }
-
-          std::cout << "che succede" << std::endl;
 
           tf::poseMsgToEigen(target.pose, pose);
 
@@ -840,8 +855,6 @@ int main(int argc, char** argv)
 
           cache.insert(id, joint_values);
 
-          std::cout << "che succede" << std::endl;
-
           action_solutions.emplace_back(task_solution[i], joint_values);
 
           if (!res)
@@ -857,8 +870,16 @@ int main(int argc, char** argv)
                 continue;
               }
 
-              // kb.addObject(collisions[i], moveit_tmp::MOVABLE);
-              kb.getObstruct()->add(collisions[i], surface_name);
+              moveit_tmp::Object coll_obj;
+              if (kb.getObjectById(collisions[i], coll_obj))
+              {
+                if (coll_obj.type == moveit_tmp::ObjectType::MOVABLE ||
+                    coll_obj.type == moveit_tmp::ObjectType::FIXED)
+                {
+                  // kb.addObject(collisions[i], moveit_tmp::MOVABLE);
+                  kb.getObstruct()->add(collisions[i], surface_name);
+                }
+              }
 
               moveit_tmp::Object surface;
               if (sandbox_kb.getOn()->getUnderById(collisions[i], surface))
@@ -914,16 +935,30 @@ int main(int argc, char** argv)
             place[1];
         ps_msg.robot_state.multi_dof_joint_state.transforms[0].translation.z =
             place[2];
+
         /*
+        ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.x = 0;
+        ps_msg.robot_sclock();tate.multi_dof_joint_state.transforms[0].rotation.y
+        = 0; ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.z =
+        0; ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.w =
+        1;
+        */
+
+        tf2::Quaternion quat_tf;
+        quat_tf.setX(place[3]);
+        quat_tf.setY(place[4]);
+        quat_tf.setZ(place[5]);
+        quat_tf.setW(place[6]);
+        quat_tf.normalize();
+
         ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.x =
-            place[3];
+            quat_tf.getX();
         ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.y =
-            place[4];
+            quat_tf.getY();
         ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.z =
-            place[5];
+            quat_tf.getZ();
         ps_msg.robot_state.multi_dof_joint_state.transforms[0].rotation.w =
-            place[6];
-            */
+            quat_tf.getW();
 
         action_solutions.emplace_back(task_solution[i], place);
 
@@ -935,7 +970,7 @@ int main(int argc, char** argv)
         return -1;
       }
 
-      std::cout << kb.getObstruct()->getPDDL() << std::endl;
+      // std::cout << kb.getObstruct()->getPDDL() << std::endl;
     }
 
     clock_t reasoning_end = clock();
@@ -991,20 +1026,26 @@ int main(int argc, char** argv)
         goal.target_pose.pose.position.x = action_solutions[0].second[0];
         goal.target_pose.pose.position.y = action_solutions[0].second[1];
         goal.target_pose.pose.position.z = action_solutions[0].second[2];
+
         /*
-                goal.target_pose.pose.orientation.x =
-           action_solutions[0].second[3]; goal.target_pose.pose.orientation.y =
-           action_solutions[0].second[4]; goal.target_pose.pose.orientation.z =
-           action_solutions[0].second[5]; goal.target_pose.pose.orientation.w =
-           action_solutions[0].second[6];
-        */
+        goal.target_pose.pose.orientation.x = 0;
+        goal.target_pose.pose.orientation.y = 0;
+        goal.target_pose.pose.orientation.z = 0;
         goal.target_pose.pose.orientation.w = 1;
+        */
+
+        goal.target_pose.pose.orientation.x = action_solutions[0].second[3];
+        goal.target_pose.pose.orientation.y = action_solutions[0].second[4];
+        goal.target_pose.pose.orientation.z = action_solutions[0].second[5];
+        goal.target_pose.pose.orientation.w = action_solutions[0].second[6];
 
         ROS_INFO("Sending goal");
         ac.sendGoal(goal);
 
         if (ac.waitForResult())
           kb.getNear()->add(action_solutions[0].first.parameters[1]);
+
+        status_changed = true;
       }
       else
       {
@@ -1115,8 +1156,12 @@ int main(int argc, char** argv)
         }
         else if (action_solutions[0].first.name == "unload")
         {
+          ROS_WARN_STREAM(
+              "UNLOADED: " << action_solutions[0].first.parameters[0]);
           kb.getLoaded()->removeObject(action_solutions[0].first.parameters[0]);
           load_--;
+
+          std::cout << "TEST:" << std::endl << kb.getPDDL() << std::endl;
         }
         else if (action_solutions[0].first.name == "putdown" ||
                  action_solutions[0].first.name == "stack")
@@ -1134,6 +1179,8 @@ int main(int argc, char** argv)
         else if (action_solutions[0].first.name == "load")
         {
           kb.getLoaded()->add(action_solutions[0].first.parameters[0]);
+          ROS_WARN_STREAM(
+              "LOADED: " << action_solutions[0].first.parameters[0]);
           kb.getInHand()->empty();
           load_++;
         }
@@ -1146,51 +1193,53 @@ int main(int argc, char** argv)
 
       // Genero movimento casuale
 
-            double r = (double)rand() / RAND_MAX;
-            ROS_INFO_STREAM("RAND: " << r);
-            if (r < 0.1)
-            {
-              ROS_WARN("Moved Object");
+      double r = (double)rand() / RAND_MAX;
+      ROS_INFO_STREAM("RAND: " << r);
+      if (r < 0.1)
+      {
 
-              ros::NodeHandle pnh("~");
+        ros::NodeHandle pnh("~");
 
-              std::vector<std::string> ob = {"red_0",    "red_1",   "green_0",
-                                             "green_1",  "blue_0",  "blue_1",
-                                             "yellow_0", "yellow_1"};
+        std::vector<std::string> ob = {"red_0",    "red_1",   "green_0",
+                                       "green_1",  "blue_0",  "blue_1",
+                                       "yellow_0", "yellow_1"};
 
-              int obj = rand() % 8; // TODO inserire num_objects
-              // int sur = rand() % num_surfaces;
+        int obj = rand() % 8; // TODO inserire num_objects
+        // int sur = rand() % num_surfaces;
 
-              std::string object_name = ob[obj];
-              // std::string surface_name = "surface_" + std::to_string(sur);
+        std::string object_name = ob[obj];
+        // std::string surface_name = "surface_" + std::to_string(sur);
 
-              std::vector<double> object_pose;
-              rosparam_shortcuts::get(LOGNAME, pnh, object_name + "/pose",
-                                      object_pose);
+        std::vector<double> object_pose;
+        rosparam_shortcuts::get(LOGNAME, pnh, object_name + "/pose",
+                                object_pose);
 
-              geometry_msgs::PoseStamped pose;
-              pose.header.frame_id = "surface_1";
-              pose.pose.position.x = object_pose[0] + 0.02;
-              pose.pose.position.y = object_pose[1] + 0.02;
-              pose.pose.position.z = 0.5 * 0.2;
+        geometry_msgs::PoseStamped pose;
+        pose.header.frame_id = "surface_1";
+        pose.pose.position.x = object_pose[0] + 0.02;
+        pose.pose.position.y = object_pose[1] + 0.02;
+        pose.pose.position.z = 0.5 * 0.2 + object_pose[2];
 
-              spawnObject(moveCollisionObject(pose, object_name));
+        spawnObject(moveCollisionObject(pose, object_name));
 
-              kb.getOn()->add(object_name, "surface_1");
-              kb.getLocatedIn()->add(object_name, "table_3");
+        kb.getOn()->add(object_name, "surface_1");
+        kb.getLocatedIn()->add(object_name, "table_3");
 
-              status_changed = true;
-            }
+        ROS_WARN_STREAM("Moved Object: " << object_name);
+
+        status_changed = true;
+      }
 
     } // tentativo movimento dopo ogni movimento
   }
 
-  clock_t end = clock();
-  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-  ROS_INFO_STREAM("Elapsed Time: " << elapsed_secs
+  const std::chrono::duration<double> elapsed_secs =
+      std::chrono::system_clock::now() - begin;
+  ROS_INFO_STREAM("Elapsed Time: " << elapsed_secs.count()
                                    << " Reasoning Time: " << reasoning_time);
   // ROS_INFO_STREAM("Removed Objects: " << tot_removed);
-  myfile << elapsed_secs << ";" /*<< tot_removed * 2 + 1 << ";"*/ << f << "\n";
+  myfile << elapsed_secs.count() << ";" /*<< tot_removed * 2 + 1 << ";"*/ << f
+         << "\n";
   myfile.close();
 
   //
