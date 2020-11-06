@@ -211,7 +211,7 @@ private:
     void reset() override;
 
   private:
-    std::vector<std::string> loaded_;
+    std::set<std::string> loaded_;
   };
 
   class Near : public Fact

@@ -411,7 +411,7 @@ void KnowledgeBase::LeaveClean::reset() { leave_clean_.clear(); }
 
 void KnowledgeBase::Loaded::add(std::string object_id)
 {
-  loaded_.push_back(object_id);
+  loaded_.insert(object_id);
 }
 
 std::string KnowledgeBase::Loaded::getPDDL()
@@ -428,7 +428,8 @@ std::string KnowledgeBase::Loaded::getPDDL()
 
 void KnowledgeBase::Loaded::removeObject(std::string object_id)
 {
-  remove(loaded_.begin(), loaded_.end(), object_id);
+  //std::remove(loaded_.begin(), loaded_.end(), object_id);
+  loaded_.erase(object_id);
 }
 
 void KnowledgeBase::Loaded::reset() { loaded_.clear(); }
