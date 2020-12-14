@@ -1,0 +1,6 @@
+global_frame: odom
+rolling_window: true
+
+plugins:
+  - {name: static,                    type: "costmap_2d::StaticLayer"}
+#  - {name: inflation,                 type: "costmap_2d::InflationLayer"}
