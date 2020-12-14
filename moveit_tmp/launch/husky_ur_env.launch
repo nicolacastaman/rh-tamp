@@ -30,9 +30,25 @@
 
   <node name="node" pkg="fake_navigation" type="node" />
 
+  <!--<node name="fake_localization" pkg="fake_localization" type="fake_localization" />-->
+
+  <!-- For fake localization we need static transform between /odom and /map -->
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />
+
+ <!-- Run the map server -->
+  <arg name="map_file" default="$(find moveit_tmp)/config/maps/sorting_map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+<!--
   <include file="$(find moveit_tmp)/launch/husky_move_base.launch">
-    <arg name="no_static_map" value="true"/>
+    <arg name="no_static_map" value="false"/>
   </include>
+-->
+
+<include file="$(find husky_navigation)/launch/move_base.launch">
+  <arg name="no_static_map" value="true"/>
+</include>
+
 
   <!-- Run Rviz -->
   <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false" args="-d $(find moveit_tmp)/config/scene.rviz">

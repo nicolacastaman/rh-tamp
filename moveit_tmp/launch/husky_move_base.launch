@@ -21,21 +21,15 @@
     <param name="DWAPlannerROS/xy_goal_tolerance" value="0.2"/>
 
     <!-- observation sources located in costmap_common.yaml -->
-    <rosparam file="$(find husky_navigation)/config/costmap_common.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find husky_navigation)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find moveit_tmp)/config/husky_navigation/costmap_common.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find moveit_tmp)/config/husky_navigation/costmap_common.yaml" command="load" ns="local_costmap" />
 
     <!-- local costmap, needs size -->
-    <rosparam file="$(find husky_navigation)/config/costmap_local.yaml" command="load" ns="local_costmap" />
-    <param name="local_costmap/width" value="10.0"/>
-    <param name="local_costmap/height" value="10.0"/>
+    <rosparam file="$(find moveit_tmp)/config/husky_navigation/costmap_local_static.yaml" command="load" ns="local_costmap" />
 
     <!-- static global costmap, static map provides size -->
-    <rosparam file="$(find husky_navigation)/config/costmap_global_static.yaml" command="load" ns="global_costmap" unless="$(arg no_static_map)"/>
+    <rosparam file="$(find moveit_tmp)/config/husky_navigation/costmap_global_static.yaml" command="load" ns="global_costmap" unless="$(arg no_static_map)"/>
 
-    <!-- global costmap with laser, for odom_navigation_demo -->
-    <rosparam file="$(find husky_navigation)/config/costmap_global_laser.yaml" command="load" ns="global_costmap" if="$(arg no_static_map)"/>
-    <param name="global_costmap/width" value="100.0" if="$(arg no_static_map)"/>
-    <param name="global_costmap/height" value="100.0" if="$(arg no_static_map)"/>
   </node>
 
 </launch>

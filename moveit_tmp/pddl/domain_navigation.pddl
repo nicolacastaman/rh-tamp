@@ -33,7 +33,7 @@
   (and
     (not(near ?x))
     (near ?y)
-    (increase(time) (/ (distance ?x ?y) (speed)))
+    (increase(time) (distance ?x ?y))
   )
 )
 
