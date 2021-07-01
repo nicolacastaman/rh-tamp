@@ -30,6 +30,10 @@ experiments:
         description: The **Non-Monotonic** task and motion planning problem. The robot has to move the red and blue cylinders from their initial position to the positions corresponding to their color. The robot can grasp cylinders only from their side.
         mediatype: "video"
         media: assets/video/rhtamp.mp4
+      - name: "Sort Clutter Problem"
+        description: The **Sort Clutter** task and motion planning problem. The mobile robot has to transport the cylinders of different colors from the initial position to the right table, sorting them by color.
+        mediatype: "video"
+        media: assets/video/mobile_rhtamp.mp4
 
 code:
   subtext: A software implementation of this project can be found on our [GitHub repository](https://github.com/nicolacastaman/rh-tamp). The implementation is based on ROS and our modification to support RH-TAMP is licensed for non-commercial use ([license summary](https://creativecommons.org/licenses/by-nc/4.0/)).
