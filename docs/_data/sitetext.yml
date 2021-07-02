@@ -24,8 +24,8 @@ experiments:
     examples:
       - name: "Clutter Table Problem"
         description: The **Clutter Table** task and motion planning problem. The robot hasto pick up the red cylinder placed between 25 other ones. The robot can grasp cylindersonly from their side.
-        mediatype: "image"
-        media: assets/img/experiments/problem_1_panda.png
+        mediatype: "video"
+        media: assets/video/rhtamp_clutter.mp4
       - name: "Non-Monotonic Problem"
         description: The **Non-Monotonic** task and motion planning problem. The robot has to move the red and blue cylinders from their initial position to the positions corresponding to their color. The robot can grasp cylinders only from their side.
         mediatype: "video"
