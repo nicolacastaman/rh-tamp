@@ -9,7 +9,7 @@
       </div>
     {% for example in site.data.sitetext.experiments.examples %}
 	  <div class="row">
-  		<div class="col-lg-6 text-center">
+  		<div class="col-lg-7 text-center">
         {% if example.mediatype == "image" %}
         <img class="mx-auto img-fluid" src="{{ example.media }}" alt="">
         {% elsif example.mediatype == "video" %}
@@ -19,7 +19,7 @@
         {% else %}
         {% endif %}
       </div>
-      <div class="col-lg-6 text-right">
+      <div class="col-lg-5 text-right">
         <h4>{{ example.name }}</h4>
         <p class="text-muted">{{ example.description | markdownify}}</p>
       </div>
